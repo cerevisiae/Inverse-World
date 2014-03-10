@@ -12,7 +12,7 @@ public class PacketHandler implements IPacketHandler {
                         Packet250CustomPayload packet, Player playerEntity) {
             
             if ( !packet.channel.equals( PacketConstants.CHANNEL_NAME ) )
-            	return;
+                return;
             
             
         }

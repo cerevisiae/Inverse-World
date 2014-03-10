@@ -52,11 +52,11 @@ import net.minecraftforge.event.terraingen.TerrainGen;
 public class InverseChunkProvider implements IChunkProvider {
 
     /** Reference to the World object. */
-	private World worldObj;
-	
-	/** RNG variable **/
-	private Random worldRNG;
-	
+    private World worldObj;
+    
+    /** RNG variable **/
+    private Random worldRNG;
+    
     /** A NoiseGeneratorOctaves used in generating terrain */
     private NoiseGeneratorOctaves stoneGen;
 
@@ -70,12 +70,12 @@ public class InverseChunkProvider implements IChunkProvider {
     
     public SimplexOctaveGenerator heightGen;
 
-	private double[] largeIslandField;
-	private double[] smallIslandField;
-	private double[] floatingRockField;
+    private double[] largeIslandField;
+    private double[] smallIslandField;
+    private double[] floatingRockField;
 
     /** Holds the data from stoneGen used in generating terrain */
-	public double[] stoneData;
+    public double[] stoneData;
 
     /** The biomes that are used to generate the chunk */
     private BiomeGenBase[] biomesForGeneration;
@@ -130,10 +130,10 @@ public class InverseChunkProvider implements IChunkProvider {
      */
     public void generateTerrain (int chunkX, int chunkZ, byte[] lowerIDs)
     {
-    	
-    	//Reorganizes how chunks are accessed.
-    	//Must be a divisor of 16
-    	//Larger numbers create more strain, smaller numbers look ugly?
+        
+        //Reorganizes how chunks are accessed.
+        //Must be a divisor of 16
+        //Larger numbers create more strain, smaller numbers look ugly?
         byte noiseInitXZ = 4;
         int sizeX = noiseInitXZ + 1;
         int sizeZ = noiseInitXZ + 1;
@@ -211,7 +211,7 @@ public class InverseChunkProvider implements IChunkProvider {
 
                         for (int offsetX = 0; offsetX < 16 / noiseInitXZ; ++offsetX)
                         {
-                        	//Position in the array for the current layer being generated
+                            //Position in the array for the current layer being generated
                             int layerPos = offsetX + iterX * (16 / noiseInitXZ) << 11 | 0 + iterZ * (16 / noiseInitXZ) << 7 | iterY * maxOffsetY + offsetY;
                             short amountPerLayer = 128;
                             
@@ -293,7 +293,7 @@ public class InverseChunkProvider implements IChunkProvider {
      */
     private double[] largeIslandNoiseField (double[] noiseArray, int xPos, int yPos, int zPos, int xSize, int ySize, int zSize)
     {
-    	//Alert forge of an attempt to initialize a noise field
+        //Alert forge of an attempt to initialize a noise field
         ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField(this, noiseArray, xPos, yPos, zPos, xSize, ySize, zSize);
         MinecraftForge.EVENT_BUS.post(event);
         
@@ -325,56 +325,56 @@ public class InverseChunkProvider implements IChunkProvider {
             for (int offsetZ = 0; offsetZ < zSize; ++offsetZ)
             {
                 
-            	double realX = offsetX + xPos;
-            	double realZ = offsetZ + zPos;
-        		
+                double realX = offsetX + xPos;
+                double realZ = offsetZ + zPos;
+                
                 for (int offsetY = 0; offsetY < ySize; ++offsetY)
                 {
-                	double finalDensity = 0.0;
+                    double finalDensity = 0.0;
 
-                	///////////////////////////
-                	//Large Island Generation//
-                	///////////////////////////
-                	double sectionSizeXZ = 256;
-                	double sectionSizeY = 96;
-                	sectionSizeY /= 8;
-                	sectionSizeXZ /= 4;
-                	float x = (float) (Math.abs(realX + sectionSizeXZ / 2) % sectionSizeXZ);
-                	float y = (float) (offsetY / sectionSizeY);
-                	float z = (float) (Math.abs(realZ + sectionSizeXZ / 2) % sectionSizeXZ);
-        			x /= sectionSizeXZ;
-        			z /= sectionSizeXZ;
-        			
-                	double largeIsland = this.largeIslandGen.noise(realX, offsetY, realZ, 1.5, 0.5, true);
-                	double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
-                	double height = this.heightGen.noise(realX, realZ, 0.5, 0.5, true);
+                    ///////////////////////////
+                    //Large Island Generation//
+                    ///////////////////////////
+                    double sectionSizeXZ = 256;
+                    double sectionSizeY = 96;
+                    sectionSizeY /= 8;
+                    sectionSizeXZ /= 4;
+                    float x = (float) (Math.abs(realX + sectionSizeXZ / 2) % sectionSizeXZ);
+                    float y = (float) (offsetY / sectionSizeY);
+                    float z = (float) (Math.abs(realZ + sectionSizeXZ / 2) % sectionSizeXZ);
+                    x /= sectionSizeXZ;
+                    z /= sectionSizeXZ;
+                    
+                    double largeIsland = this.largeIslandGen.noise(realX, offsetY, realZ, 1.5, 0.5, true);
+                    double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
+                    double height = this.heightGen.noise(realX, realZ, 0.5, 0.5, true);
 
-                	//Make the noise between 0.5 and 0.8
-                	double randomDeformRidges = ( (height + 1) / (20 / 3) ) + 0.5;
-                	
-                	double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
-                	largeIsland *= centerFalloff;
-                	
-                	//Round the top and bottom if they get too close to the edges
-                	//Prevents the tops from being completely flat
-                	double plateauFalloff = 0.0;
-                	if( 0.1 < y && y < 0.2)
-                	{
-                    	plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
-                	}
-                	else if(0.2 <= y && y < randomDeformRidges)
-                	{
+                    //Make the noise between 0.5 and 0.8
+                    double randomDeformRidges = ( (height + 1) / (20 / 3) ) + 0.5;
+                    
+                    double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
+                    largeIsland *= centerFalloff;
+                    
+                    //Round the top and bottom if they get too close to the edges
+                    //Prevents the tops from being completely flat
+                    double plateauFalloff = 0.0;
+                    if( 0.1 < y && y < 0.2)
+                    {
+                        plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
+                    }
+                    else if(0.2 <= y && y < randomDeformRidges)
+                    {
                         plateauFalloff = 1.0;
                     }
-                	else if(randomDeformRidges <= y && y <= 0.8)
-                	{
-                    	++height;
-                    	height /= (20 / 3);
-                    	plateauFalloff = 1.0 - (height * height * ( y - randomDeformRidges ));
-                	}
+                    else if(randomDeformRidges <= y && y <= 0.8)
+                    {
+                        ++height;
+                        height /= (20 / 3);
+                        plateauFalloff = 1.0 - (height * height * ( y - randomDeformRidges ));
+                    }
                     else if(0.8 < y && y < 0.9)
                     {
-                    	plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
+                        plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
                     }
                     
                     largeIsland *= plateauFalloff;
@@ -391,21 +391,21 @@ public class InverseChunkProvider implements IChunkProvider {
                     //Apply caves to the islands
                     if (caveDensity > 0.5)
                     {
-                    	largeIsland *= (1 - caveDensity) + caveDensity * 0.0;
+                        largeIsland *= (1 - caveDensity) + caveDensity * 0.0;
                     }
                     
                     //Apply hills tot het op of the islands
                     height = (height + 1) / 5 + 0.7;
                     if(y > height)
                     {
-                    	largeIsland *= (1 - y);
+                        largeIsland *= (1 - y);
                     }
                     
                     if(offsetY > sectionSizeY)
                     {
-                    	largeIsland = 0.0;
+                        largeIsland = 0.0;
                     }
-                	finalDensity = largeIsland;
+                    finalDensity = largeIsland;
                     
                     noiseArray[noiseArrayInt] = finalDensity;
                     ++noiseArrayInt;
@@ -428,7 +428,7 @@ public class InverseChunkProvider implements IChunkProvider {
      */
     private double[] smallIslandNoiseField (double[] noiseArray, int xPos, int yPos, int zPos, int xSize, int ySize, int zSize)
     {
-    	//Alert forge of an attempt to initialize a noise field
+        //Alert forge of an attempt to initialize a noise field
         ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField(this, noiseArray, xPos, yPos, zPos, xSize, ySize, zSize);
         MinecraftForge.EVENT_BUS.post(event);
         
@@ -455,62 +455,62 @@ public class InverseChunkProvider implements IChunkProvider {
             for (int offsetZ = 0; offsetZ < zSize; ++offsetZ)
             {
                 
-            	double realX = offsetX + xPos;
-            	double realZ = offsetZ + zPos;
-            	double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
+                double realX = offsetX + xPos;
+                double realZ = offsetZ + zPos;
+                double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
 
                 for (int offsetY = 0; offsetY < ySize; ++offsetY)
                 {
-                	double finalDensity = 0.0;
+                    double finalDensity = 0.0;
 
-                	///////////////////////////
-                	//Small Island Generation//
-                	///////////////////////////
-                	double sectionSizeXZ = 128;
-                	double sectionSizeY = 128;
-                	sectionSizeY /= 8;
-                	sectionSizeXZ /= 4;
-                	float x = (float) (Math.abs(realX ) % sectionSizeXZ);
-                	float y = (float) (offsetY / sectionSizeY);
-                	float z = (float) (Math.abs(realZ ) % sectionSizeXZ);
-        			x /= sectionSizeXZ;
-        			z /= sectionSizeXZ;
+                    ///////////////////////////
+                    //Small Island Generation//
+                    ///////////////////////////
+                    double sectionSizeXZ = 128;
+                    double sectionSizeY = 128;
+                    sectionSizeY /= 8;
+                    sectionSizeXZ /= 4;
+                    float x = (float) (Math.abs(realX ) % sectionSizeXZ);
+                    float y = (float) (offsetY / sectionSizeY);
+                    float z = (float) (Math.abs(realZ ) % sectionSizeXZ);
+                    x /= sectionSizeXZ;
+                    z /= sectionSizeXZ;
 
-                	double smallIsland = this.smallIslandGen.noise(realX, offsetY, realZ, 0.8, 0.5);
-                	
-                	double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
+                    double smallIsland = this.smallIslandGen.noise(realX, offsetY, realZ, 0.8, 0.5);
+                    
+                    double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
 
-                	//Round the top and bottom if they get too close to the edges
-                	//Prevents the tops from being completely flat
-                	double plateauFalloff = 0.0;
-                	if( 0.1 < y && y < 0.2)
-                	{
-                    	plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
-                	}
-                	else if( 0.2 <= y && y <= 0.8)
-                	{
+                    //Round the top and bottom if they get too close to the edges
+                    //Prevents the tops from being completely flat
+                    double plateauFalloff = 0.0;
+                    if( 0.1 < y && y < 0.2)
+                    {
+                        plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
+                    }
+                    else if( 0.2 <= y && y <= 0.8)
+                    {
                         plateauFalloff = 1.0;
                     }
                     else if(0.8 < y && y < 0.9)
                     {
-                    	plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
+                        plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
                     }
-                	
+                    
                     smallIsland = smallIsland * centerFalloff * plateauFalloff;
 
                     //Deform the islands on the Y axis
                     double deformY = 1.0;
                     if ( y < 0.6 && deformDensityY > 0.8)
                     {
-                    	deformY = deformDensityY * y;
+                        deformY = deformDensityY * y;
                     }
                     else
                     {
-                    	deformY = 1.0 * (1 - deformDensityY) + deformDensityY * deformDensityY * y;
+                        deformY = 1.0 * (1 - deformDensityY) + deformDensityY * deformDensityY * y;
                     }
                     smallIsland *= deformY;
                     
-                	finalDensity = smallIsland;
+                    finalDensity = smallIsland;
                     
                     noiseArray[noiseArrayInt] = finalDensity;
                     ++noiseArrayInt;
@@ -533,7 +533,7 @@ public class InverseChunkProvider implements IChunkProvider {
      */
     private double[] floatingRockNoiseField (double[] noiseArray, int xPos, int yPos, int zPos, int xSize, int ySize, int zSize)
     {
-    	//Alert forge of an attempt to initialize a noise field
+        //Alert forge of an attempt to initialize a noise field
         ChunkProviderEvent.InitNoiseField event = new ChunkProviderEvent.InitNoiseField(this, noiseArray, xPos, yPos, zPos, xSize, ySize, zSize);
         MinecraftForge.EVENT_BUS.post(event);
         
@@ -555,85 +555,85 @@ public class InverseChunkProvider implements IChunkProvider {
         //Used to access the noiseArray in order
         int noiseArrayInt = 0;
 
-    	//Move the islands up and down
+        //Move the islands up and down
         double islandTop = 0;
         double islandBottom = 0;
-    	islandTop = this.worldRNG.nextInt(12) + 4;
-    	islandBottom = islandTop - 4;
-		
-    	//Check if we should build a floating rock at this chunk
+        islandTop = this.worldRNG.nextInt(12) + 4;
+        islandBottom = islandTop - 4;
+        
+        //Check if we should build a floating rock at this chunk
         boolean buildIsland = true;
-    	if(this.worldRNG.nextInt(10) < 8)
-    	{
-    		buildIsland = false;
-    	}
+        if(this.worldRNG.nextInt(10) < 8)
+        {
+            buildIsland = false;
+        }
         
         for (int offsetX = 0; offsetX < xSize; ++offsetX)
         {
             for (int offsetZ = 0; offsetZ < zSize; ++offsetZ)
             {
                 
-            	double realX = offsetX + xPos;
-            	double realZ = offsetZ + zPos;
-            	double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
-            	
-            	//Make the noise fluctuate between minBiomeHeight and maxBiomeHeight
-            	
+                double realX = offsetX + xPos;
+                double realZ = offsetZ + zPos;
+                double deformDensityY = this.deformYGen.noise(realX, realZ, 0.5, 0.5);
+                
+                //Make the noise fluctuate between minBiomeHeight and maxBiomeHeight
+                
                 for (int offsetY = 0; offsetY < ySize; ++offsetY)
                 {
-                	double finalDensity = 0.0;
-                	
-                	if (buildIsland && offsetY > islandBottom && offsetY < islandTop)
-                	{
-                       	///////////////////////////
-                    	//Rock Generation        //
-                    	///////////////////////////
-                    	double sectionSizeXZ = 16;
-                    	double sectionSizeY = 32;
-                    	sectionSizeY /= 8;
-                    	sectionSizeXZ /= 4;
-                    	float x = (float) (Math.abs(realX ) % sectionSizeXZ);
-                    	float y = (float) ((offsetY - islandBottom) / sectionSizeY);
-                    	float z = (float) (Math.abs(realZ ) % sectionSizeXZ);
-            			x /= sectionSizeXZ;
-            			z /= sectionSizeXZ;
+                    double finalDensity = 0.0;
+                    
+                    if (buildIsland && offsetY > islandBottom && offsetY < islandTop)
+                    {
+                           ///////////////////////////
+                        //Rock Generation        //
+                        ///////////////////////////
+                        double sectionSizeXZ = 16;
+                        double sectionSizeY = 32;
+                        sectionSizeY /= 8;
+                        sectionSizeXZ /= 4;
+                        float x = (float) (Math.abs(realX ) % sectionSizeXZ);
+                        float y = (float) ((offsetY - islandBottom) / sectionSizeY);
+                        float z = (float) (Math.abs(realZ ) % sectionSizeXZ);
+                        x /= sectionSizeXZ;
+                        z /= sectionSizeXZ;
 
-                    	double floatingRock = this.rockGen.noise(realX, offsetY, realZ, 0.8, 0.5);
-                    	
-                    	double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
+                        double floatingRock = this.rockGen.noise(realX, offsetY, realZ, 0.8, 0.5);
+                        
+                        double centerFalloff = 0.1 / (Math.pow((x - 0.5) * 1.5, 2) + Math.pow((y - 1.0) * 0.8, 2) + Math.pow((z - 0.5) * 1.5, 2));
 
-                    	//Round the top and bottom if they get too close to the edges
-                    	//Prevents the tops from being completely flat
-                    	double plateauFalloff = 0.0;
-                    	if( 0.1 < y && y < 0.2)
-                    	{
-                        	plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
-                    	}
-                    	else if( 0.2 <= y && y <= 0.8)
-                    	{
+                        //Round the top and bottom if they get too close to the edges
+                        //Prevents the tops from being completely flat
+                        double plateauFalloff = 0.0;
+                        if( 0.1 < y && y < 0.2)
+                        {
+                            plateauFalloff = 1 + ( y - 0.2 ) * 10.0;
+                        }
+                        else if( 0.2 <= y && y <= 0.8)
+                        {
                             plateauFalloff = 1.0;
                         }
                         else if(0.8 < y && y < 0.9)
                         {
-                        	plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
+                            plateauFalloff = 1.0 - ( y - 0.8 ) * 10.0;
                         }
-                    	
+                        
                         floatingRock = floatingRock * centerFalloff * plateauFalloff;
 
                         //Deform the islands on the Y axis
                         double deformY = 1.0;
                         if ( y < 0.6 && deformDensityY > 0.8)
                         {
-                        	deformY = deformDensityY * y;
+                            deformY = deformDensityY * y;
                         }
                         else
                         {
-                        	deformY = 1.0 * (1 - deformDensityY) + deformDensityY * deformDensityY * y;
+                            deformY = 1.0 * (1 - deformDensityY) + deformDensityY * deformDensityY * y;
                         }
                         floatingRock *= deformY;
                         
-                    	finalDensity = floatingRock;
-                	}
+                        finalDensity = floatingRock;
+                    }
 
                     noiseArray[noiseArrayInt] = finalDensity;
                     ++noiseArrayInt;
@@ -644,7 +644,7 @@ public class InverseChunkProvider implements IChunkProvider {
         return noiseArray;
     }
     
-	/***
+    /***
      * Replaces the stone that was placed in with blocks that match the biome
      * @param chunkX The chunk to be generated's X location
      * @param chunkZ The chunk to be generated's Z location
@@ -669,14 +669,14 @@ public class InverseChunkProvider implements IChunkProvider {
                 float biomeTemp = biomegenbase.getFloatTemperature();
                 int sNoise = (int)(this.stoneNoise[posX + posZ * 16] / 3.0D + 3.0D + this.worldRNG.nextDouble() * 0.25D);
                 int j1 = -1;
-            	//System.out.println(biomegenbase.topBlock + " " + Block.grass.blockID);
+                //System.out.println(biomegenbase.topBlock + " " + Block.grass.blockID);
                 byte b1 = biomegenbase.topBlock;
                 
                 //Use luminous grass instead of grass
-            	if(biomegenbase.topBlock == Block.grass.blockID)
-            	{
-            		b1 = (byte) InverseBlocks.luminousGrass.blockID;
-            	}
+                if(biomegenbase.topBlock == Block.grass.blockID)
+                {
+                    b1 = (byte) InverseBlocks.luminousGrass.blockID;
+                }
                 byte b2 = biomegenbase.fillerBlock;
 
                 for (int posY = 127; posY >= 0; --posY)
@@ -732,16 +732,16 @@ public class InverseChunkProvider implements IChunkProvider {
         }
     }
     
-	/***
-	 * Checks to see if a chunk exists at x, y
-	 * @return Always returns true because a chunk always has to exist I suppose?
-	 * @param chunkX The X location of the chunk
-	 * @param chunkZ The Z location of the chunk
-	 */
-	public boolean chunkExists(int chunkX, int chunkZ) {
-		return true;
-	}
-	
+    /***
+     * Checks to see if a chunk exists at x, y
+     * @return Always returns true because a chunk always has to exist I suppose?
+     * @param chunkX The X location of the chunk
+     * @param chunkZ The Z location of the chunk
+     */
+    public boolean chunkExists(int chunkX, int chunkZ) {
+        return true;
+    }
+    
     /**
      * Will return back a chunk, if it doesn't exist and its not a MP client it will generates all the blocks for the
      * specified chunk from the map seed and chunk seed
@@ -771,26 +771,26 @@ public class InverseChunkProvider implements IChunkProvider {
         chunk.generateSkylightMap();
         return chunk;
     }
-	/***
-	 * Loads or generates the chunk at the chunk location specified
-	 * @param chunkX The X location of the chunk
-	 * @param chunkZ The Z location of the chunk
-	 * @return The chunk at the specified location
-	 */
-	public Chunk loadChunk(int chunkX, int chunkZ) {
-		return this.provideChunk(chunkX, chunkZ);
-	}
+    /***
+     * Loads or generates the chunk at the chunk location specified
+     * @param chunkX The X location of the chunk
+     * @param chunkZ The Z location of the chunk
+     * @return The chunk at the specified location
+     */
+    public Chunk loadChunk(int chunkX, int chunkZ) {
+        return this.provideChunk(chunkX, chunkZ);
+    }
 
     /**
      * Populates chunk with ores etc etc
      * @param chunkProvider The chunk provider to use
      * @param chunkX The X location of the chunk
-	 * @param chunkZ The Z location of the chunk
-	 * @return Nothing
+     * @param chunkZ The Z location of the chunk
+     * @return Nothing
      */
-	public void populate(IChunkProvider chunkProvider, int chunkX, int chunkZ) {
-		
-	
+    public void populate(IChunkProvider chunkProvider, int chunkX, int chunkZ) {
+        
+    
         BlockSand.fallInstantly = false; //Stop everything from falling immediately
         
         int k = chunkX * 16;
@@ -801,7 +801,7 @@ public class InverseChunkProvider implements IChunkProvider {
         long j1 = this.worldRNG.nextLong() / 2L * 2L + 1L;
         this.worldRNG.setSeed((long)chunkX * i1 + (long)chunkZ * j1 ^ this.worldObj.getSeed());
 
-    	//Inform forge of world generation
+        //Inform forge of world generation
         boolean flag = false; //For sending event updates to forge
         MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Pre(chunkProvider, this.worldObj, this.worldRNG, chunkX, chunkZ, flag)); //Tell forge we're beginning to populate a new chunk
 
@@ -871,86 +871,86 @@ public class InverseChunkProvider implements IChunkProvider {
         MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Post(chunkProvider, worldObj, this.worldRNG, chunkX, chunkZ, flag));
 
         BlockSand.fallInstantly = false;
-		
-	}
+        
+    }
 
     /**
      * Two modes of operation: if passed true, save all Chunks in one go.  If passed false, save up to two chunks.
      * @return Returns true if all chunks have been saved.
      */
-	public boolean saveChunks(boolean flag, IProgressUpdate iprogressupdate) {
-		return true;
-	}
+    public boolean saveChunks(boolean flag, IProgressUpdate iprogressupdate) {
+        return true;
+    }
 
     /**
      * Unloads chunks that are marked to be unloaded. This is not guaranteed to unload every such chunk.
      * @return Always returns false because I don't think any of this is implemented anywhere.
      */
-	public boolean unloadQueuedChunks() {
-		return false;
-	}
+    public boolean unloadQueuedChunks() {
+        return false;
+    }
 
     /**
      * Returns if the IChunkProvider supports saving.
      */
-	public boolean canSave() {
-		return true;
-	}
+    public boolean canSave() {
+        return true;
+    }
 
     /**
      * Converts the instance data to a readable string.
      */
-	public String makeString() {
-		return "InverseWorldRandomLevelSource";
-	}
+    public String makeString() {
+        return "InverseWorldRandomLevelSource";
+    }
 
-	/**
-	 * Returns a list of creatures of the specified type that can spawn at the given location.
-	 * @param enumcreaturetype A list of creature types to check if they can possibly spawn there
-	 * @param xPos The X position to check
-	 * @param yPos The Y position to check
-	 * @param zPos The Z position to check
-	 */
-	public List getPossibleCreatures(EnumCreatureType enumcreaturetype, int xPos, int yPos, int zPos) {
+    /**
+     * Returns a list of creatures of the specified type that can spawn at the given location.
+     * @param enumcreaturetype A list of creature types to check if they can possibly spawn there
+     * @param xPos The X position to check
+     * @param yPos The Y position to check
+     * @param zPos The Z position to check
+     */
+    public List getPossibleCreatures(EnumCreatureType enumcreaturetype, int xPos, int yPos, int zPos) {
         BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(xPos, zPos);
         return biomegenbase == null ? null : biomegenbase.getSpawnableList(enumcreaturetype);
-	}
+    }
 
-	/**
-	 * Returns the location of the closest structure of the specified type. If not found returns null.
-	 * @param world A reference to the world object
-	 * @param s Some string I guess. I don't know yet.
-	 * @param xPos The X position to check from
-	 * @param yPos The Y position to check from
-	 * @param zPos The Z position to check from
-	 */
-	public ChunkPosition findClosestStructure(World world, String s, int xPos, int yPos, int zPos) {
-		return null;
-	}
+    /**
+     * Returns the location of the closest structure of the specified type. If not found returns null.
+     * @param world A reference to the world object
+     * @param s Some string I guess. I don't know yet.
+     * @param xPos The X position to check from
+     * @param yPos The Y position to check from
+     * @param zPos The Z position to check from
+     */
+    public ChunkPosition findClosestStructure(World world, String s, int xPos, int yPos, int zPos) {
+        return null;
+    }
 
     /**
      * Returns the amount of loaded chunks.
      * @return Doesn't do anything really. Not even in Minecraft I guess.
      */
-	public int getLoadedChunkCount() {
-		return 0;
-	}
+    public int getLoadedChunkCount() {
+        return 0;
+    }
     
-	@Override
-	public void recreateStructures(int i, int j) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void recreateStructures(int i, int j) {
+        // TODO Auto-generated method stub
+        
+    }
 
     /**
      * No clue.
      */
-	public void func_104112_b() {}
+    public void func_104112_b() {}
 
-	@Override
-	public void saveExtraData() {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void saveExtraData() {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

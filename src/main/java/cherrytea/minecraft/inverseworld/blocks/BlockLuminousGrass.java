@@ -18,7 +18,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLuminousGrass extends InvBlock {
-	
+    
     @SideOnly(Side.CLIENT)
     private Icon iconGrassTop;
     @SideOnly(Side.CLIENT)
@@ -30,17 +30,17 @@ public class BlockLuminousGrass extends InvBlock {
      * Construct Luminous Grass, set values for 
      * @param id
      */
-	public BlockLuminousGrass(int id) {
-		super(id, Material.grass, 0.6F, "grass");
-		
-		this.setLightValue(0.7F);
-		this.setStepSound(Block.soundGrassFootstep);
-		this.setUnlocalizedName("grassLuminous");
+    public BlockLuminousGrass(int id) {
+        super(id, Material.grass, 0.6F, "grass");
+        
+        this.setLightValue(0.7F);
+        this.setStepSound(Block.soundGrassFootstep);
+        this.setUnlocalizedName("grassLuminous");
         this.setTickRandomly(true);
         
         this.setCreativeTab(CreativeTabs.tabBlock);
-	}
-	
+    }
+    
     /**
      * Ticks the block if it's been scheduled
      */
@@ -142,10 +142,10 @@ public class BlockLuminousGrass extends InvBlock {
      */
     public int getRenderColor(int par1)
     {
-    	if (par1 == 0)
-    		return this.getBlockColor();
-    	else
-    		return 16777215;
+        if (par1 == 0)
+            return this.getBlockColor();
+        else
+            return 16777215;
     }
 
     @SideOnly(Side.CLIENT)
@@ -180,9 +180,9 @@ public class BlockLuminousGrass extends InvBlock {
             }
         }
 
-	     // Convert color to HSB.
-	     float[] hsbVals = new float[3];
-	     Color.RGBtoHSB(r/9, g/9, b/9, hsbVals);
+         // Convert color to HSB.
+         float[] hsbVals = new float[3];
+         Color.RGBtoHSB(r/9, g/9, b/9, hsbVals);
         
         //Return the final hue shifted color
         return Color.HSBtoRGB(0.5F, hsbVals[1] + 0.1F, hsbVals[2] + 0.2F);
