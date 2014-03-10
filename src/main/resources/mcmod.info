@@ -1,0 +1,21 @@
+[
+{
+  "modid": "inverseworld",
+  "name": "Inverse World",
+  "description": "A whole other world.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authors": ["cherrytea"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+  "parent": "",
+  "requiredMods": [],
+  "dependencies": [],
+  "dependants": [],
+  "useDependencyInformation": "false"
+}
+]
